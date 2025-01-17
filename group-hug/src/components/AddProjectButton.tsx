@@ -64,7 +64,7 @@ const AddProjectButton: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Add Project</Button>
+          <Button onClick={handleSubmit} variant="contained">Add Project</Button>
         </DialogActions>
       </Dialog>
     </>

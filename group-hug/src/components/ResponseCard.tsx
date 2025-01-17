@@ -8,6 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Box from '@mui/material/Box';
+import PersonIcon from '@mui/icons-material/Person';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
 
 interface Source {
   title: string;
@@ -36,9 +38,15 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ response }) => {
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          Query: {response.query}
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          gutterBottom
+          sx={{ fontWeight: 'bold' }}
+        >
+          Q: {response.query}
         </Typography>
+
         <Typography variant="body1" component="div">
           {response.response}
         </Typography>
@@ -50,14 +58,20 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ response }) => {
               size="small"
               onClick={() => handleOpenSource(source)}
               sx={{ mr: 1, mb: 1 }}
+              startIcon={index < 6 ? <PersonIcon /> : <Diversity3Icon />}
             >
-              {source.title}
+              {index + 1}
             </Button>
           ))}
         </Box>
       </CardContent>
       <Dialog open={!!openSource} onClose={handleCloseSource}>
-        <DialogTitle>{openSource?.title}</DialogTitle>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PersonIcon />
+            {openSource?.title}
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <Typography>{openSource?.description}</Typography>
         </DialogContent>
