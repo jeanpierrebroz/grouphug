@@ -112,7 +112,7 @@ class Project(BaseModel):
 #     response: str
 #     sources: List[Source]
 
-@app.post("/query", response_model=QueryResponse)
+@app.post("/query")
 async def handle_query(query: Query):
     # Dummy response and sources
     sources = get_sources(query.text)

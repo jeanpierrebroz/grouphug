@@ -28,6 +28,7 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ response }) => {
   const [openSource, setOpenSource] = useState<Source | null>(null);
 
   const handleOpenSource = (source: Source) => {
+    console.log(response)
     setOpenSource(source);
   };
 

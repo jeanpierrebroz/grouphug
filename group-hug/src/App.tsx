@@ -44,6 +44,7 @@ function App() {
         body: JSON.stringify({ text: query }),
       });
       const data: QueryResponse = await response.json();
+      console.log(data.sources);
       setResponses([...responses, data]);
     } catch (error) {
       console.error('Error sending query:', error);
