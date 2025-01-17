@@ -22,29 +22,39 @@ const QueryInput: React.FC<QueryInputProps> = ({ onSubmit }) => {
 
   return (
     <Box
-  component="form"
-  onSubmit={handleSubmit}
-  sx={{ position: 'relative' }}
->
-  <TextField
-    fullWidth
-    multiline
-    minRows={1}
-    maxRows={7}
-    variant="outlined"
-    placeholder="Ask a question..."
-    value={query}
-    onChange={(e) => setQuery(e.target.value)}
-    InputProps={{
-      endAdornment: (
-        <IconButton type="submit">
-          <ArrowForwardIcon />
-        </IconButton>
-      ),
-    }}
-    sx={{ pr: 5 }}
-  />
-</Box>
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ position: 'relative' }}
+    >
+      <TextField
+        fullWidth
+        multiline
+        minRows={1}
+        maxRows={7}
+        variant="outlined"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); // Prevent form submission
+            handleSubmit(e); // Pass the event to handleSubmit
+          }
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '16px', // Adjust the value for more or less curvature
+          },
+        }}
+        placeholder="Ask a question..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        InputProps={{
+          endAdornment: (
+            <IconButton type="submit">
+              <ArrowForwardIcon />
+            </IconButton>
+          ),
+        }}
+      />
+    </Box>
 
   );
 };
