@@ -121,6 +121,7 @@ class Person(BaseModel):
 class Project(BaseModel):
     name: str
     description: str
+    githubUrl: str
 
 # class Source(BaseModel):
 #     title: str
@@ -162,11 +163,13 @@ async def add_person(person: Person):
 
 @app.post("/add_project")
 async def add_project(project: Project):
-    vec = vectormagic(project.description)
-    index_stats = index.describe_index_stats()
-    total_vector_count = index_stats.total_vector_count
-    index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : project.name, 'Description' : project.description, "Type" : "Project"}}])
-    return {"message": "Project added successfully"}
+    print(project.githubUrl)
+    print(project.name)
+    # vec = vectormagic(project.description)
+    # index_stats = index.describe_index_stats()
+    # total_vector_count = index_stats.total_vector_count
+    # index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : project.name, 'Description' : project.description, "Type" : "Project"}}])
+    # return {"message": "Project added successfully"}
 
 @app.get("/people")
 async def get_people():
