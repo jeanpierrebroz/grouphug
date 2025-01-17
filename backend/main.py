@@ -4,9 +4,15 @@ from pydantic import BaseModel
 from typing import List
 from sentence_transformers import SentenceTransformer, util
 from openai import OpenAI
+from pinecone import Pinecone
+from dotenv import dotenv_values
+
+config = dotenv_values()
 
 model = SentenceTransformer("msmarco-bert-base-dot-v5")
 
+pc = Pinecone(config['PINECONE'])
+index = pc.Index('hackathon')
 
 
 
@@ -23,7 +29,7 @@ def llmResponse(sources):
     prompt = ""
     client = OpenAI(
     base_url = "https://integrate.api.nvidia.com/v1",
-    api_key = "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"
+    api_key = config['NVIDIA']
     )
 
     completion = client.chat.completions.create(
@@ -35,10 +41,27 @@ def llmResponse(sources):
     stream=False
     )
 
-    return completion.choices[0].
+    return completion.choices[0].message.content
 
 
-    pass
+
+
+def get_sources(query: str):
+
+    vec = vectormagic(query)
+    res = []
+    results = index.query(
+        vector=[0.1, 0.3],
+    top_k=6,
+    include_values=True,
+    include_metadata=True,
+    filter={"type": {"$eq": "person"}}
+    )
+
+    for r in results['matches']:
+        
+
+
 
 
 
@@ -95,7 +118,7 @@ async def add_person(person: Person):
 
 @app.post("/add_project")
 async def add_project(project: Project):
-    projects.append(f"{project.name}: {project.description}")
+
     return {"message": "Project added successfully"}
 
 @app.get("/people")
