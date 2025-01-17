@@ -26,7 +26,5 @@ for i in range(len(df)):
     vec = vectormagic(desc)
     index_stats = index.describe_index_stats()
     print(i)
-
-# Get total vector count
     total_vector_count = index_stats.total_vector_count
-    index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+1}", "metadata" : {'Name' : name, 'Description' : desc, "Type" : t}}])
+    index.upsert(vectors = [{"values" : vec, "id": f"vec{i}", "metadata" : {'Name' : name, 'Description' : desc, "Type" : t}}])

@@ -63,18 +63,19 @@ def get_sources(query: str):
     vec = vectormagic(query)
     res = []
     results = index.query(
-        vector=vec,
+    vector=vec,
     top_k=6,
-    include_values=False,
+    include_values=True,
     include_metadata=True,
     filter={"Type": {"$eq": "Person"}}
     )
+
 
     for r in results['matches']:
         res.append(r)
 
     results = index.query(
-        vector=vec,
+    vector=vec,
     top_k=2,
     include_values=True,
     include_metadata=True,
@@ -129,15 +130,17 @@ async def handle_query(query: Query):
     # Dummy response and sources
     sources = get_sources(query.text)
 
-    response = llmResponse(sources)
+    response = llmResponse(sources, query)
     # response = ""
 
+    print(response)
     final = []
     for src in sources:
-        temp = {src['metadata']['Name'], src['metadata']['Description']}
+        temp = {'title' : src['metadata']['Name'], 'description' : src['metadata']['Description']}
  
         final.append(temp)
     # print(final)
+    print(len(final), final)
 
 
 
