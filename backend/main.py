@@ -28,6 +28,12 @@ def llmResponse(sources, queryington):
     
     ppl = ""
     proj = ""
+    for i in range(6):
+        ppl+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
+    
+    for i in range(6,8):
+        proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
+
     prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
     You will give a summary of what you find, and cite the source using the corresponding source ID. You must keep your responses brief, but mention all relevant people. Don't ramble. Here is the query: {queryington}
 
@@ -133,7 +139,6 @@ async def handle_query(query: Query):
     response = llmResponse(sources, query)
     # response = ""
 
-    print(response)
     final = []
     for src in sources:
         temp = {'title' : src['metadata']['Name'], 'description' : src['metadata']['Description']}
