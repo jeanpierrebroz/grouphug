@@ -2,6 +2,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
+from sentence_transformers import SentenceTransformer, util
+
+model = SentenceTransformer("msmarco-bert-base-dot-v5")
+
+
+def vectormagic(query:str):
+    temp = model.encode(query)
+
+    res =[]
+    for val in temp:
+        res.append(float(val))
+    return res
+
+
+
 
 app = FastAPI()
 
