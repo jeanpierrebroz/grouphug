@@ -1,8 +1,31 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 from pinecone import Pinecone
+from dotenv import dotenv_values
+config = dotenv_values()
 
-pc = Pinecone()
-model = SentenceTransformer("msmarco-distilbert-dot-v5")
+pc = Pinecone(config['PINECONE'])
+index = pc.Index('hackathon')
+df = pd.read_csv('data.csv')
 
-query_embedding = model.encode("How big is London")
+
+model = SentenceTransformer("msmarco-bert-base-dot-v5")
+
+def vectormagic(query: str):
+    temp = model.encode(query)
+    res = []
+    for i in temp:
+        res.append(float(i))
+    return res
+
+for i in range(len(df)):
+    row = df.loc[i]
+    desc = row['Description']
+    name = row['Name']
+    t = row['type']
+    vec = vectormagic(desc)
+    index_stats = index.describe_index_stats()
+
+# Get total vector count
+    total_vector_count = index_stats.total_vector_count
+    index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+1}", "metadata" : {'Name' : name, 'Description' : desc, "Type" : t}}])
