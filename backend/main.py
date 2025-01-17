@@ -14,9 +14,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize empty lists for people and projects
-people = []
-projects = []
+# In-memory storage for people and projects
+people: List[str] = []
+projects: List[str] = []
+
+class Query(BaseModel):
+    text: str
 
 class Person(BaseModel):
     name: str
@@ -26,20 +29,24 @@ class Project(BaseModel):
     name: str
     description: str
 
+class Source(BaseModel):
+    title: str
+    description: str
+
 class QueryResponse(BaseModel):
     query: str
     response: str
-    sources: List[dict]
+    sources: List[Source]
 
-@app.post("/query")
-async def process_query(query: str):
+@app.post("/query", response_model=QueryResponse)
+async def handle_query(query: Query):
     # Dummy response and sources
-    response = f"This is a dummy response for: {query}"
+    response = f"This is a dummy response for the query: {query.text}"
     sources = [
-        {"title": f"Source {i}", "description": f"Description for source {i}"}
+        Source(title=f"Source {i}", description=f"Description for source {i}")
         for i in range(1, 9)
     ]
-    return QueryResponse(query=query, response=response, sources=sources)
+    return QueryResponse(query=query.text, response=response, sources=sources)
 
 @app.post("/add_person")
 async def add_person(person: Person):
@@ -51,3 +58,10 @@ async def add_project(project: Project):
     projects.append(f"{project.name}: {project.description}")
     return {"message": "Project added successfully"}
 
+@app.get("/people")
+async def get_people():
+    return {"people": people}
+
+@app.get("/projects")
+async def get_projects():
+    return {"projects": projects}

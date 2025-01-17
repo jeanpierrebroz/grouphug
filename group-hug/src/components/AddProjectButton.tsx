@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
 
 const AddProjectButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -11,16 +16,21 @@ const AddProjectButton: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      await fetch('http://localhost:8000/add_project', {
+      const response = await fetch('http://localhost:8000/add_project', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name, description }),
       });
-      handleClose();
-      setName('');
-      setDescription('');
+      if (response.ok) {
+        console.log('Project added successfully');
+        handleClose();
+        setName('');
+        setDescription('');
+      } else {
+        console.error('Failed to add project');
+      }
     } catch (error) {
       console.error('Error adding project:', error);
     }

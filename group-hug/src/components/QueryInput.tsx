@@ -1,47 +1,40 @@
 import React, { useState } from 'react';
-import { TextField, IconButton, Box } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
 import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
 
 interface QueryInputProps {
-  onNewResponse: (response: any) => void;
+  onSubmit: (query: string) => void;
 }
 
-const QueryInput: React.FC<QueryInputProps> = ({ onNewResponse }) => {
+const QueryInput: React.FC<QueryInputProps> = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
 
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/query', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-      });
-      const data = await response.json();
-      onNewResponse(data);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      onSubmit(query);
       setQuery('');
-    } catch (error) {
-      console.error('Error submitting query:', error);
     }
   };
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ position: 'relative' }}>
       <TextField
         fullWidth
         multiline
         minRows={1}
         maxRows={5}
+        variant="outlined"
+        placeholder="Ask a question..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Ask a question..."
-        variant="outlined"
         sx={{ pr: 5 }}
       />
       <IconButton
+        type="submit"
         sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}
-        onClick={handleSubmit}
       >
         <SendIcon />
       </IconButton>
