@@ -26,7 +26,7 @@ function App() {
   const [responses, setResponses] = useState<any[]>([]);
 
   const handleNewResponse = (response: any) => {
-    setResponses((prev) => [response, ...prev]);
+    setResponses((prev) => [...prev, response]);
   };
 
   return (
