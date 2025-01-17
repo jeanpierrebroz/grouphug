@@ -24,9 +24,21 @@ def vectormagic(query: str):
     return res
 
 
-def llmResponse(sources):
+def llmResponse(sources, queryington):
     
-    prompt = ""
+    ppl = ""
+    proj = ""
+    prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
+    You will give a summary of what you find, and cite the source using the corresponding source ID. You must keep your responses brief, but mention all relevant people. Don't ramble. Here is the query: {queryington}
+
+
+    Here are the PEOPLE: {ppl}
+
+    Here are the PROJECTS: {proj}
+
+
+
+    '''
     client = OpenAI(
     base_url = "https://integrate.api.nvidia.com/v1",
     api_key = config['NVIDIA']
@@ -117,8 +129,8 @@ async def handle_query(query: Query):
     # Dummy response and sources
     sources = get_sources(query.text)
 
-    # response = llmResponse(sources)
-    response = ""
+    response = llmResponse(sources)
+    # response = ""
 
     final = []
     for src in sources:
