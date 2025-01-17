@@ -153,12 +153,19 @@ async def handle_query(query: Query):
 
 @app.post("/add_person")
 async def add_person(person: Person):
-    people.append(f"{person.name}: {person.description}")
+
+    vec = vectormagic(person.description)
+    index_stats = index.describe_index_stats()
+    total_vector_count = index_stats.total_vector_count
+    index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : person.name, 'Description' : person.description, "Type" : "Person"}}])
     return {"message": "Person added successfully"}
 
 @app.post("/add_project")
 async def add_project(project: Project):
-
+    vec = vectormagic(project.description)
+    index_stats = index.describe_index_stats()
+    total_vector_count = index_stats.total_vector_count
+    index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : project.name, 'Description' : project.description, "Type" : "Project"}}])
     return {"message": "Project added successfully"}
 
 @app.get("/people")
