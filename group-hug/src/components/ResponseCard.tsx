@@ -44,7 +44,7 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ response }) => {
           gutterBottom
           sx={{ fontWeight: 'bold' }}
         >
-          Q: {response.query}
+          {response.query}
         </Typography>
 
         <Typography variant="body1" component="div">

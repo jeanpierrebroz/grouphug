@@ -8,6 +8,7 @@ import QueryInput from './components/QueryInput';
 import ResponseCard from './components/ResponseCard';
 import AddPersonButton from './components/AddPersonButton';
 import AddProjectButton from './components/AddProjectButton';
+import logo from './logo.webp';
 
 const theme = createTheme({
   palette: {
@@ -52,6 +53,27 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* <Box 
+    sx={{
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      zIndex: -1, // Ensure it stays on top but doesn't interfere with other components
+      borderRadius: '16px', // Rounded corners
+      overflow: 'hidden', // Ensure the corners are rounded for the image
+    }}
+  >
+    <img 
+      src={logo} 
+      alt="Logo" 
+      style={{ 
+        width: '50%',  // Half the size of the original
+        height: 'auto', 
+        borderRadius: '16px', // Curved corners
+      }} 
+    />
+  </Box> */}
       <Container maxWidth="md">
         <Box sx={{ my: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
