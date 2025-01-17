@@ -51,16 +51,27 @@ def get_sources(query: str):
     vec = vectormagic(query)
     res = []
     results = index.query(
-        vector=[0.1, 0.3],
+        vector=vec,
     top_k=6,
-    include_values=True,
+    include_values=False,
     include_metadata=True,
-    filter={"type": {"$eq": "person"}}
+    filter={"Type": {"$eq": "Person"}}
     )
 
     for r in results['matches']:
-        
+        res.append(r)
 
+    results = index.query(
+        vector=vec,
+    top_k=2,
+    include_values=True,
+    include_metadata=True,
+    filter={"Type": {"$eq": "Project"}}
+    )
+
+    for r in results['matches']:
+        res.append(r)
+    return res
 
 
 
@@ -92,24 +103,33 @@ class Project(BaseModel):
     name: str
     description: str
 
-class Source(BaseModel):
-    title: str
-    description: str
+# class Source(BaseModel):
+#     title: str
+#     description: str
 
-class QueryResponse(BaseModel):
-    query: str
-    response: str
-    sources: List[Source]
+# class QueryResponse(BaseModel):
+#     query: str
+#     response: str
+#     sources: List[Source]
 
 @app.post("/query", response_model=QueryResponse)
 async def handle_query(query: Query):
     # Dummy response and sources
-    response = f"This is a dummy response for the query: {query.text}"
-    sources = [
-        Source(title=f"Source {i}", description=f"Description for source {i}")
-        for i in range(1, 9)
-    ]
-    return QueryResponse(query=query.text, response=response, sources=sources)
+    sources = get_sources(query.text)
+
+    # response = llmResponse(sources)
+    response = ""
+
+    final = []
+    for src in sources:
+        temp = {src['metadata']['Name'], src['metadata']['Description']}
+ 
+        final.append(temp)
+    # print(final)
+
+
+
+    return {'query' : query.text, 'response' : response, 'sources' : final}
 
 @app.post("/add_person")
 async def add_person(person: Person):

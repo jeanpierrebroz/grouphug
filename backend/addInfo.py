@@ -22,9 +22,10 @@ for i in range(len(df)):
     row = df.loc[i]
     desc = row['Description']
     name = row['Name']
-    t = row['type']
+    t = row['Type']
     vec = vectormagic(desc)
     index_stats = index.describe_index_stats()
+    print(i)
 
 # Get total vector count
     total_vector_count = index_stats.total_vector_count
