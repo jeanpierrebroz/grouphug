@@ -49,8 +49,14 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ response }) => {
         </Typography>
 
         <Typography variant="body1" component="div">
-          {response.response}
+          {response.response.split('\n').map((line, index) => (
+            <React.Fragment key={index}>
+              {line}
+              <br />
+            </React.Fragment>
+          ))}
         </Typography>
+
         <Box sx={{ mt: 2 }}>
           {response.sources.map((source, index) => (
             <Button
