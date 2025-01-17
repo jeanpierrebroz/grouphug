@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 interface QueryInputProps {
   onSubmit: (query: string) => void;
@@ -20,25 +21,31 @@ const QueryInput: React.FC<QueryInputProps> = ({ onSubmit }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ position: 'relative' }}>
-      <TextField
-        fullWidth
-        multiline
-        minRows={1}
-        maxRows={5}
-        variant="outlined"
-        placeholder="Ask a question..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        sx={{ pr: 5 }}
-      />
-      <IconButton
-        type="submit"
-        sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}
-      >
-        <SendIcon />
-      </IconButton>
-    </Box>
+    <Box
+  component="form"
+  onSubmit={handleSubmit}
+  sx={{ position: 'relative' }}
+>
+  <TextField
+    fullWidth
+    multiline
+    minRows={1}
+    maxRows={7}
+    variant="outlined"
+    placeholder="Ask a question..."
+    value={query}
+    onChange={(e) => setQuery(e.target.value)}
+    InputProps={{
+      endAdornment: (
+        <IconButton type="submit">
+          <ArrowForwardIcon />
+        </IconButton>
+      ),
+    }}
+    sx={{ pr: 5 }}
+  />
+</Box>
+
   );
 };
 

@@ -64,7 +64,7 @@ const AddPersonButton: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Add Person</Button>
+          <Button onClick={handleSubmit} variant="contained">Add Person</Button>
         </DialogActions>
       </Dialog>
     </>
