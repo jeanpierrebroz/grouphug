@@ -2,6 +2,46 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
+from sentence_transformers import SentenceTransformer, util
+from openai import OpenAI
+
+model = SentenceTransformer("msmarco-bert-base-dot-v5")
+
+
+
+
+def vectormagic(query: str):
+    temp = model.encode(query)
+    res = []
+    for i in temp:
+        res.append(float(i))
+    return res
+
+
+def llmResponse(sources):
+    
+    prompt = ""
+    client = OpenAI(
+    base_url = "https://integrate.api.nvidia.com/v1",
+    api_key = "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"
+    )
+
+    completion = client.chat.completions.create(
+    model="meta/llama-3.1-405b-instruct",
+    messages=[{"role":"user","content":prompt}],
+    temperature=0.01,
+    top_p=0.7,
+    max_tokens=1024,
+    stream=False
+    )
+
+    return completion.choices[0].
+
+
+    pass
+
+
+
 
 app = FastAPI()
 
@@ -65,3 +105,6 @@ async def get_people():
 @app.get("/projects")
 async def get_projects():
     return {"projects": projects}
+
+if __name__=="__main__":
+    print("bruh")
