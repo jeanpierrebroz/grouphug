@@ -8,6 +8,7 @@ import QueryInput from './components/QueryInput';
 import ResponseCard from './components/ResponseCard';
 import AddPersonButton from './components/AddPersonButton';
 import AddProjectButton from './components/AddProjectButton';
+import CircularProgress from '@mui/material/CircularProgress'; // Import the CircularProgress component
 import logo from './logo.webp';
 
 const theme = createTheme({
@@ -33,8 +34,11 @@ interface QueryResponse {
 
 function App() {
   const [responses, setResponses] = useState<QueryResponse[]>([]);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleQuery = async (query: string) => {
+    setLoading(true); // Set loading to true when the query starts
+
     try {
       const response = await fetch('http://localhost:8000/query', {
         method: 'POST',
@@ -48,6 +52,8 @@ function App() {
       setResponses([...responses, data]);
     } catch (error) {
       console.error('Error sending query:', error);
+    } finally {
+      setLoading(false); // Set loading to false once the request finishes
     }
   };
 
@@ -64,7 +70,16 @@ function App() {
               <ResponseCard key={index} response={response} />
             ))}
           </Box>
-          <QueryInput onSubmit={handleQuery} />
+
+          {/* Conditionally render QueryInput or loading spinner */}
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <CircularProgress /> {/* Show loading spinner */}
+            </Box>
+          ) : (
+            <QueryInput onSubmit={handleQuery} />
+          )}
+
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
             <AddPersonButton />
             <AddProjectButton />
@@ -76,4 +91,3 @@ function App() {
 }
 
 export default App;
-
