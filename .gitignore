@@ -16,6 +16,14 @@ dist-ssr
 __pycache__/
 # Environment variables
 .env
+.env.*
+**/.env
+**/.env.*
+
+# Package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # Editor directories and files
 .vscode/*

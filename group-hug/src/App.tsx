@@ -10,6 +10,10 @@ import AddPersonButton from './components/AddPersonButton';
 import AddProjectButton from './components/AddProjectButton';
 import CircularProgress from '@mui/material/CircularProgress'; // Import the CircularProgress component
 import logo from './logo.webp';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PeopleTab from './components/PeopleTab';
+import ProjectsTab from './components/ProjectsTab';
 
 const theme = createTheme({
   palette: {
@@ -34,7 +38,12 @@ interface QueryResponse {
 
 function App() {
   const [responses, setResponses] = useState<QueryResponse[]>([]);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   const handleQuery = async (query: string) => {
     setLoading(true); // Set loading to true when the query starts
@@ -60,30 +69,45 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Box sx={{ my: 4 }}>
           <Typography variant="h3" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
             Group Hug
           </Typography>
-          <Box sx={{ mb: 2 }}>
-            {responses.map((response, index) => (
-              <ResponseCard key={index} response={response} />
-            ))}
+
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+            <Tabs value={tabValue} onChange={handleTabChange} centered>
+              <Tab label="Chat" />
+              <Tab label="People" />
+              <Tab label="Projects" />
+            </Tabs>
           </Box>
 
-          {/* Conditionally render QueryInput or loading spinner */}
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-              <CircularProgress /> {/* Show loading spinner */}
-            </Box>
-          ) : (
-            <QueryInput onSubmit={handleQuery} />
+          {tabValue === 0 && (
+            <>
+              <Box sx={{ mb: 2 }}>
+                {responses.map((response, index) => (
+                  <ResponseCard key={index} response={response} />
+                ))}
+              </Box>
+
+              {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <QueryInput onSubmit={handleQuery} />
+              )}
+
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <AddPersonButton />
+                <AddProjectButton />
+              </Box>
+            </>
           )}
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <AddPersonButton />
-            <AddProjectButton />
-          </Box>
+          {tabValue === 1 && <PeopleTab />}
+          {tabValue === 2 && <ProjectsTab />}
         </Box>
       </Container>
     </ThemeProvider>

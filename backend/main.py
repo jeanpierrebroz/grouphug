@@ -8,10 +8,27 @@ from pinecone import Pinecone
 from dotenv import dotenv_values
 import requests
 import base64
+import os
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 config = dotenv_values()
 
-model = SentenceTransformer("msmarco-bert-base-dot-v5")
+# Define cache directory
+cache_dir = os.path.join(os.path.dirname(__file__), "model_cache")
+os.makedirs(cache_dir, exist_ok=True)
+
+logger.info(f"Loading model from/to cache directory: {cache_dir}")
+# Initialize model at startup with explicit cache directory
+model = SentenceTransformer("msmarco-bert-base-dot-v5", cache_folder=cache_dir)
+logger.info("Model loaded successfully")
+
+def get_model():
+    global model
+    return model
 
 pc = Pinecone(config['PINECONE'])
 index = pc.Index('hackathon')
@@ -19,7 +36,7 @@ index = pc.Index('hackathon')
 
 
 def vectormagic(query: str):
-    temp = model.encode(query)
+    temp = get_model().encode(query)
     res = []
     for i in temp:
         res.append(float(i))
@@ -235,6 +252,43 @@ async def get_people():
 
 @app.get("/projects")
 async def get_projects():
+    return {"projects": projects}
+
+@app.get("/get_all_people")
+async def get_all_people(skip: int = 0, limit: int = 20):
+    results = index.query(
+        vector=[0.0] * 768,  # Dummy vector to get all results
+        top_k=skip + limit,
+        include_metadata=True,
+        filter={"Type": {"$eq": "Person"}},
+    )
+    
+    people = []
+    for match in results['matches'][skip:skip+limit]:
+        people.append({
+            'name': match['metadata']['Name'],
+            'description': match['metadata']['Description']
+        })
+    
+    return {"people": people}
+
+@app.get("/get_all_projects")
+async def get_all_projects(skip: int = 0, limit: int = 20):
+    results = index.query(
+        vector=[0.0] * 768,  # Dummy vector to get all results
+        top_k=skip + limit,  # Get all results up to skip + limit
+        include_metadata=True,
+        filter={"Type": {"$eq": "Project"}},
+    )
+    
+    projects = []
+    # Only take the slice we want after skipping
+    for match in results['matches'][skip:skip + limit]:
+        projects.append({
+            'name': match['metadata']['Name'],
+            'description': match['metadata']['Description']
+        })
+    
     return {"projects": projects}
 
 if __name__=="__main__":
