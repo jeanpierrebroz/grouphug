@@ -21,27 +21,26 @@ config = dotenv_values()
 cache_dir = os.path.join(os.path.dirname(__file__), "model_cache")
 os.makedirs(cache_dir, exist_ok=True)
 
-logger.info(f"Loading model from/to cache directory: {cache_dir}")
-# Initialize model at startup with explicit cache directory
-model = SentenceTransformer("msmarco-bert-base-dot-v5", cache_folder=cache_dir)
-logger.info("Model loaded successfully")
+# Initialize model variable but don't load it immediately
+sentence_transformer = None
 
-def get_model():
-    global model
-    return model
+def get_sentence_transformer():
+    global sentence_transformer
+    if sentence_transformer is None:
+        logger.info(f"Loading model from/to cache directory: {cache_dir}")
+        sentence_transformer = SentenceTransformer("msmarco-bert-base-dot-v5", cache_folder=cache_dir)
+        logger.info("Model loaded successfully")
+    return sentence_transformer
 
 pc = Pinecone(config['PINECONE'])
 index = pc.Index('hackathon')
 
-
-
 def vectormagic(query: str):
-    temp = get_model().encode(query)
+    temp = get_sentence_transformer().encode(query)
     res = []
     for i in temp:
         res.append(float(i))
     return res
-
 
 def llmResponse(sources, queryington):
     
@@ -80,9 +79,6 @@ def llmResponse(sources, queryington):
 
     return completion.choices[0].message.content
 
-
-
-
 def get_sources(query: str):
 
     vec = vectormagic(query)
@@ -110,10 +106,6 @@ def get_sources(query: str):
     for r in results['matches']:
         res.append(r)
     return res
-
-
-
-
 
 app = FastAPI()
 
@@ -264,6 +256,8 @@ async def get_all_people(skip: int = 0, limit: int = 20):
     )
     
     people = []
+    # if skip>0:
+    #     skip = skip + 1
     for match in results['matches'][skip:skip+limit]:
         people.append({
             'name': match['metadata']['Name'],

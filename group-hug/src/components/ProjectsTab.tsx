@@ -39,17 +39,16 @@ const ProjectsTab: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ height: 'calc(100vh - 200px)', overflow: 'auto' }} id="projectsScroll">
+    <Box>
       <InfiniteScroll
         dataLength={projects.length}
         next={fetchProjects}
         hasMore={hasMore}
         loader={<Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}><CircularProgress /></Box>}
-        scrollableTarget="projectsScroll"
       >
         <Box sx={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
+          gridTemplateColumns: 'repeat(2, 1fr)', 
           gap: 2,
           p: 2
         }}>

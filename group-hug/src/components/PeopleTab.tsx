@@ -16,6 +16,7 @@ const PeopleTab: React.FC = () => {
 
   const fetchPeople = async () => {
     try {
+        console.log("fetching people")
       const response = await fetch(`http://localhost:8000/get_all_people?skip=${page * 20}&limit=20`);
       const data = await response.json();
       
@@ -38,17 +39,16 @@ const PeopleTab: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ height: 'calc(100vh - 205px)', overflow: 'auto' }} id="peopleScroll">
+    <Box>
       <InfiniteScroll
         dataLength={people.length}
         next={fetchPeople}
         hasMore={hasMore}
         loader={<Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}><CircularProgress /></Box>}
-        scrollableTarget="peopleScroll"
       >
         <Box sx={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
+          gridTemplateColumns: 'repeat(2, 1fr)', 
           gap: 2,
           p: 2
         }}>
