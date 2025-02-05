@@ -15,6 +15,7 @@ const AddProjectButton: React.FC = () => {
   const [description, setDescription] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
   const [tabValue, setTabValue] = useState(0);
+  const [githubName, setGithubName] = useState(''); // New state for GitHub name
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -24,7 +25,7 @@ const AddProjectButton: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    const data = { name, description, githubUrl };
+    const data = { name, description, githubUrl, githubName };
 
     try {
       const response = await fetch('http://localhost:8000/add_project', {
@@ -39,6 +40,7 @@ const AddProjectButton: React.FC = () => {
         handleClose();
         setName('');
         setDescription('');
+        setGithubName('');
         setGithubUrl('');
       } else {
         console.error('Failed to add project');
@@ -83,6 +85,15 @@ const AddProjectButton: React.FC = () => {
               />
             </>
           ) : (
+            <Box>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Project Name"
+                fullWidth
+                value={githubName}
+                onChange={(e) => setGithubName(e.target.value)}
+              />
             <TextField
               autoFocus
               margin="dense"
@@ -91,6 +102,7 @@ const AddProjectButton: React.FC = () => {
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
             />
+            </Box>
           )}
         </DialogContent>
         <DialogActions>

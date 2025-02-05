@@ -6,6 +6,8 @@ from sentence_transformers import SentenceTransformer, util
 from openai import OpenAI
 from pinecone import Pinecone
 from dotenv import dotenv_values
+import requests
+import base64
 
 config = dotenv_values()
 
@@ -31,8 +33,8 @@ def llmResponse(sources, queryington):
     for i in range(6):
         ppl+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
     
-    for i in range(6,8):
-        proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
+    # for i in range(6,8):
+    #     proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
 
     prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
     You will give a summary of what you find, and cite the source using the corresponding source ID. You must keep your responses brief, but mention all relevant people. Don't ramble. Here is the query: {queryington}
@@ -122,6 +124,7 @@ class Project(BaseModel):
     name: str
     description: str
     githubUrl: str
+    githubName: str
 
 # class Source(BaseModel):
 #     title: str
@@ -163,13 +166,68 @@ async def add_person(person: Person):
 
 @app.post("/add_project")
 async def add_project(project: Project):
-    print(project.githubUrl)
-    print(project.name)
-    # vec = vectormagic(project.description)
-    # index_stats = index.describe_index_stats()
-    # total_vector_count = index_stats.total_vector_count
-    # index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : project.name, 'Description' : project.description, "Type" : "Project"}}])
-    # return {"message": "Project added successfully"}
+    if project.githubUrl == "":
+        vec = vectormagic(project.description)
+        index_stats = index.describe_index_stats()
+        total_vector_count = index_stats.total_vector_count
+        index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : project.name, 'Description' : project.description, "Type" : "Project"}}])
+        return {"message": "Project added successfully"}
+    else:
+        repo_url = project.githubUrl
+        parts = repo_url.rstrip("/").split("/")
+        if len(parts) < 2:
+            raise ValueError("Invalid GitHub repository URL")
+        owner, repo = parts[-2], parts[-1]
+
+        # GitHub API URL for README
+        api_url = f"https://api.github.com/repos/{owner}/{repo}/readme"
+
+        # Make the API request
+        response = requests.get(api_url, headers={"Accept": "application/vnd.github.v3+json"})
+
+        if response.status_code == 200:
+            # Decode README content from base64
+            readme_data = response.json()
+            content = requests.utils.unquote(readme_data.get("content", ""))
+            readme_content = base64.b64decode(readme_data['content']).decode('utf-8')
+            print("README content:")
+            print(readme_content)
+
+
+
+
+        readMe = ""
+        prompt = f'''
+            Following I will give you a readMe for a GitHub repository. Issolate the description of the project and ONLY return what the description of the project is.
+            Also state the team members that were involved in the projects and their emails
+            readMe: <{readme_content}>
+        '''
+        client = OpenAI(
+        base_url = "https://integrate.api.nvidia.com/v1",
+        api_key = config['NVIDIA']
+        )
+
+        completion = client.chat.completions.create(
+        model="meta/llama-3.1-405b-instruct",
+        messages=[{"role":"user","content":prompt}],
+        temperature=0.01,
+        top_p=0.7,
+        max_tokens=1024,
+        stream=False
+        )
+
+
+        print(completion.choices[0].message.content)
+        project.description = completion.choices[0].message.content
+        project.name = project.githubName
+
+        vec = vectormagic(project.description)
+        index_stats = index.describe_index_stats()
+        total_vector_count = index_stats.total_vector_count
+        index.upsert(vectors = [{"values" : vec, "id": f"vec{total_vector_count+5}", "metadata" : {'Name' : project.name, 'Description' : project.description, "Type" : "Project"}}])
+        return {"message": "Project added successfully"}
+
+
 
 @app.get("/people")
 async def get_people():
