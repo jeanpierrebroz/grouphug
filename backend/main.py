@@ -137,7 +137,7 @@ class Query(BaseModel):
 class Person(BaseModel):
     name: str
     description: str
-
+    resumeDescription: str
 class Project(BaseModel):
     name: str
     description: str
@@ -175,6 +175,23 @@ async def handle_query(query: Query):
 
 @app.post("/add_person")
 async def add_person(person: Person):
+    # If the description is very long, it's likely a resume that needs processing
+    if len(person.resumeDescription) > 0:  # Arbitrary threshold to detect resume content
+        print("RESUME DESCRIPTION: ", person.resumeDescription)
+        prompt = f'''
+            I will give you a resume. Please create a concise description of the person's skills, experience, and background.
+            Focus on their technical abilities, projects, and achievements. Keep it brief but informative.
+            Resume: <{person.resumeDescription}>
+        '''
+        
+        # GEMINI STUFF
+        client = genai.Client(api_key=config['GEMINI'])
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt)
+        
+        # Update description with processed resume content
+        person.description = response.text
 
     vec = vectormagic(person.description)
     index_stats = index.describe_index_stats()
