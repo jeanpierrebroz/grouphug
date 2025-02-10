@@ -23,21 +23,21 @@ cache_dir = os.path.join(os.path.dirname(__file__), "model_cache")
 os.makedirs(cache_dir, exist_ok=True)
 
 # Initialize model variable but don't load it immediately
-sentence_transformer = None
+sentence_transformer = SentenceTransformer("msmarco-bert-base-dot-v5", cache_folder=cache_dir)
 
-def get_sentence_transformer():
-    global sentence_transformer
-    if sentence_transformer is None:
-        logger.info(f"Loading model from/to cache directory: {cache_dir}")
-        sentence_transformer = SentenceTransformer("msmarco-bert-base-dot-v5", cache_folder=cache_dir)
-        logger.info("Model loaded successfully")
-    return sentence_transformer
+# def get_sentence_transformer():
+#     global sentence_transformer
+#     if sentence_transformer is None:
+#         logger.info(f"Loading model from/to cache directory: {cache_dir}")
+#         sentence_transformer = SentenceTransformer("msmarco-bert-base-dot-v5", cache_folder=cache_dir)
+#         logger.info("Model loaded successfully")
+#     return sentence_transformer
 
 pc = Pinecone(config['PINECONE'])
 index = pc.Index('hackathon')
 
 def vectormagic(query: str):
-    temp = get_sentence_transformer().encode(query)
+    temp = sentence_transformer.encode(query)
     res = []
     for i in temp:
         res.append(float(i))

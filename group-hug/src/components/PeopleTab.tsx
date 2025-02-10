@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import AddPersonButton from './AddPersonButton';
 
 interface Person {
   name: string;
@@ -20,9 +21,7 @@ const PeopleTab: React.FC = () => {
       const response = await fetch(`http://localhost:8000/get_all_people?skip=${page * 20}&limit=20`);
       const data = await response.json();
       
-      if (data.people.length < 20) {
-        setHasMore(false);
-      }
+      setHasMore(false);
       
       // setPeople(prevPeople => [...prevPeople, ...data.people]);
       setPeople(data.people);
@@ -31,6 +30,7 @@ const PeopleTab: React.FC = () => {
       console.error('Error fetching people:', error);
     }
   };
+  
 
   useEffect(() => {
     if (!initialized.current) {
@@ -41,12 +41,15 @@ const PeopleTab: React.FC = () => {
 
   return (
     <Box>
-      {/* <InfiniteScroll
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <AddPersonButton />
+      </Box>
+      <InfiniteScroll
         dataLength={people.length}
         next={fetchPeople}
         hasMore={hasMore}
         loader={<Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}><CircularProgress /></Box>}
-      > */}
+      >
         <Box sx={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(2, 1fr)', 
@@ -65,7 +68,7 @@ const PeopleTab: React.FC = () => {
             </Card>
           ))}
         </Box>
-      {/* </InfiniteScroll> */}
+      </InfiniteScroll>
     </Box>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Box, Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
+import AddProjectButton from './AddProjectButton';
 interface Project {
   name: string;
   description: string;
@@ -19,9 +19,7 @@ const ProjectsTab: React.FC = () => {
       const response = await fetch(`http://localhost:8000/get_all_projects?skip=${page * 20}&limit=20`);
       const data = await response.json();
       
-      if (data.projects.length < 20) {
-        setHasMore(false);
-      }
+      setHasMore(false);
       
       // setProjects(prevProjects => [...prevProjects, ...data.projects]);
       setProjects(data.projects);
@@ -41,12 +39,16 @@ const ProjectsTab: React.FC = () => {
 
   return (
     <Box>
-      {/* <InfiniteScroll
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <AddProjectButton />
+      </Box>
+
+      <InfiniteScroll
         dataLength={projects.length}
         next={fetchProjects}
         hasMore={hasMore}
         loader={<Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}><CircularProgress /></Box>}
-      > */}
+      >
         <Box sx={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(2, 1fr)', 
@@ -65,7 +67,7 @@ const ProjectsTab: React.FC = () => {
             </Card>
           ))}
         </Box>
-      {/* </InfiniteScroll> */}
+      </InfiniteScroll>
     </Box>
   );
 };
