@@ -10,6 +10,7 @@ import requests
 import base64
 import os
 import logging
+from google import genai
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -49,8 +50,8 @@ def llmResponse(sources, queryington):
     for i in range(6):
         ppl+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
     
-    # for i in range(6,8):
-    #     proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
+    for i in range(6,8):
+        proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
 
     prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
     You will give a summary of what you find, and cite the source using the corresponding source ID. You must keep your responses brief, but mention all relevant people. Don't ramble. Here is the query: {queryington}
@@ -63,21 +64,29 @@ def llmResponse(sources, queryington):
 
 
     '''
-    client = OpenAI(
-    base_url = "https://integrate.api.nvidia.com/v1",
-    api_key = config['NVIDIA']
-    )
+    # NVIIDA STUFF
+    # client = OpenAI(
+    # base_url = "https://integrate.api.nvidia.com/v1",
+    # api_key = config['NVIDIA']
+    # )
 
-    completion = client.chat.completions.create(
-    model="meta/llama-3.1-405b-instruct",
-    messages=[{"role":"user","content":prompt}],
-    temperature=0.01,
-    top_p=0.7,
-    max_tokens=1024,
-    stream=False
-    )
+    # completion = client.chat.completions.create(
+    # model="meta/llama-3.1-405b-instruct",
+    # messages=[{"role":"user","content":prompt}],
+    # temperature=0.01,
+    # top_p=0.7,
+    # max_tokens=1024,
+    # stream=False
+    # )
 
-    return completion.choices[0].message.content
+    # return completion.choices[0].message.content
+
+    # GEMINI STUFF
+    client = genai.Client(api_key=config['GEMINI'])
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt)
+    return response.text
 
 def get_sources(query: str):
 
@@ -208,26 +217,34 @@ async def add_project(project: Project):
         readMe = ""
         prompt = f'''
             Following I will give you a readMe for a GitHub repository. Issolate the description of the project and ONLY return what the description of the project is.
-            Also state the team members that were involved in the projects and their emails
+            Do not say that you are writing a description, just return the description.
+            Also state the team members that were involved in the projects and their emails, and say the team members in a sentence, rather than bullet points.
             readMe: <{readme_content}>
         '''
-        client = OpenAI(
-        base_url = "https://integrate.api.nvidia.com/v1",
-        api_key = config['NVIDIA']
-        )
+        #NVIDIA STUFF
+        # client = OpenAI(
+        # base_url = "https://integrate.api.nvidia.com/v1",
+        # api_key = config['NVIDIA']
+        # )
 
-        completion = client.chat.completions.create(
-        model="meta/llama-3.1-405b-instruct",
-        messages=[{"role":"user","content":prompt}],
-        temperature=0.01,
-        top_p=0.7,
-        max_tokens=1024,
-        stream=False
-        )
+        # completion = client.chat.completions.create(
+        # model="meta/llama-3.1-405b-instruct",
+        # messages=[{"role":"user","content":prompt}],
+        # temperature=0.01,
+        # top_p=0.7,
+        # max_tokens=1024,
+        # stream=False
+        # )
+
+        # GEMINI STUFF
+        client = genai.Client(api_key=config['GEMINI'])
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt)
 
 
-        print(completion.choices[0].message.content)
-        project.description = completion.choices[0].message.content
+        print(response.text)
+        project.description = response.text
         project.name = project.githubName
 
         vec = vectormagic(project.description)
