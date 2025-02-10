@@ -24,7 +24,8 @@ const PeopleTab: React.FC = () => {
         setHasMore(false);
       }
       
-      setPeople(prevPeople => [...prevPeople, ...data.people]);
+      // setPeople(prevPeople => [...prevPeople, ...data.people]);
+      setPeople(data.people);
       setPage(prevPage => prevPage + 1);
     } catch (error) {
       console.error('Error fetching people:', error);
@@ -40,12 +41,12 @@ const PeopleTab: React.FC = () => {
 
   return (
     <Box>
-      <InfiniteScroll
+      {/* <InfiniteScroll
         dataLength={people.length}
         next={fetchPeople}
         hasMore={hasMore}
         loader={<Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}><CircularProgress /></Box>}
-      >
+      > */}
         <Box sx={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(2, 1fr)', 
@@ -64,7 +65,7 @@ const PeopleTab: React.FC = () => {
             </Card>
           ))}
         </Box>
-      </InfiniteScroll>
+      {/* </InfiniteScroll> */}
     </Box>
   );
 };

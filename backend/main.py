@@ -250,7 +250,7 @@ async def get_projects():
 async def get_all_people(skip: int = 0, limit: int = 20):
     results = index.query(
         vector=[0.0] * 768,  # Dummy vector to get all results
-        top_k=skip + limit,
+        top_k=100,
         include_metadata=True,
         filter={"Type": {"$eq": "Person"}},
     )
@@ -258,7 +258,7 @@ async def get_all_people(skip: int = 0, limit: int = 20):
     people = []
     # if skip>0:
     #     skip = skip + 1
-    for match in results['matches'][skip:skip+limit]:
+    for match in results['matches']:
         people.append({
             'name': match['metadata']['Name'],
             'description': match['metadata']['Description']
@@ -270,14 +270,14 @@ async def get_all_people(skip: int = 0, limit: int = 20):
 async def get_all_projects(skip: int = 0, limit: int = 20):
     results = index.query(
         vector=[0.0] * 768,  # Dummy vector to get all results
-        top_k=skip + limit,  # Get all results up to skip + limit
+        top_k=100,  # Get all results up to skip + limit
         include_metadata=True,
         filter={"Type": {"$eq": "Project"}},
     )
     
     projects = []
     # Only take the slice we want after skipping
-    for match in results['matches'][skip:skip + limit]:
+    for match in results['matches']:
         projects.append({
             'name': match['metadata']['Name'],
             'description': match['metadata']['Description']

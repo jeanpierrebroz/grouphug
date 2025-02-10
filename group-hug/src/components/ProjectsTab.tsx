@@ -23,7 +23,8 @@ const ProjectsTab: React.FC = () => {
         setHasMore(false);
       }
       
-      setProjects(prevProjects => [...prevProjects, ...data.projects]);
+      // setProjects(prevProjects => [...prevProjects, ...data.projects]);
+      setProjects(data.projects);
       setPage(prevPage => prevPage + 1);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -40,12 +41,12 @@ const ProjectsTab: React.FC = () => {
 
   return (
     <Box>
-      <InfiniteScroll
+      {/* <InfiniteScroll
         dataLength={projects.length}
         next={fetchProjects}
         hasMore={hasMore}
         loader={<Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}><CircularProgress /></Box>}
-      >
+      > */}
         <Box sx={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(2, 1fr)', 
@@ -64,7 +65,7 @@ const ProjectsTab: React.FC = () => {
             </Card>
           ))}
         </Box>
-      </InfiniteScroll>
+      {/* </InfiniteScroll> */}
     </Box>
   );
 };
