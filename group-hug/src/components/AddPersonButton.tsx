@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const AddPersonButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -15,6 +16,7 @@ const AddPersonButton: React.FC = () => {
   const [description, setDescription] = useState('');
   const [resumeContent, setResumeContent] = useState('');
   const [tabValue, setTabValue] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -24,6 +26,7 @@ const AddPersonButton: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       // If on resume tab, use resume content as description
       const personData = {
@@ -52,12 +55,19 @@ const AddPersonButton: React.FC = () => {
       }
     } catch (error) {
       console.error('Error adding person:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
-      <Button variant="contained" onClick={handleOpen} sx={{ mr: 1 }}>
+      <Button 
+        variant="contained" 
+        onClick={handleOpen} 
+        sx={{ mr: 1 }}
+        disabled={isLoading}
+      >
         Add a Person
       </Button>
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -113,8 +123,14 @@ const AddPersonButton: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">Add Person</Button>
+          <Button onClick={handleClose} disabled={isLoading}>Cancel</Button>
+          <Button 
+            onClick={handleSubmit} 
+            variant="contained" 
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={24} /> : 'Add Person'}
+          </Button>
         </DialogActions>
       </Dialog>
     </>
