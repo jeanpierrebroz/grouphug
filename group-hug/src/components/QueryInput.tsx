@@ -24,7 +24,7 @@ const QueryInput: React.FC<QueryInputProps> = ({ onSubmit }) => {
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ position: 'relative' }}
+      sx={{ position: 'relative', mr: 8, ml: 8 }}
     >
       <TextField
         fullWidth
