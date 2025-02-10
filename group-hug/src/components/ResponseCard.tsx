@@ -37,7 +37,7 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ response }) => {
   };
 
   return (
-    <Card sx={{ mb: 2 }}>
+    <Card sx={{ mb: 2, mr: 8, ml:8 }}>
       <CardContent>
         <Typography
           variant="h6"
