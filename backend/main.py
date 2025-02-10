@@ -54,7 +54,10 @@ def llmResponse(sources, queryington):
         proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
 
     prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
-    You will give a summary of what you find, and cite the source using the corresponding source ID. You must keep your responses brief, but mention all relevant people. Don't ramble. Here is the query: {queryington}
+    You will give a summary of what you find, and cite the source using the corresponding source ID. 
+    You must keep your responses brief, but mention all relevant people. 
+    Seperate relevant people and projects with a new line. 
+    Here is the query: {queryington}
 
 
     Here are the PEOPLE: {ppl}
