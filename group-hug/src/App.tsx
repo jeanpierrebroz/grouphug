@@ -36,6 +36,8 @@ interface QueryResponse {
   sources: { title: string; description: string }[];
 }
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function App() {
   const [responses, setResponses] = useState<QueryResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ function App() {
     setLoading(true); // Set loading to true when the query starts
 
     try {
-      const response = await fetch('http://localhost:8000/query', {
+      const response = await fetch(`${API_URL}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
