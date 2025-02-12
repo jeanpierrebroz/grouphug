@@ -38,3 +38,5 @@ pnpm-lock.yaml
 
 backend/model_cache/
 **/model_cache/
+
+.vercel
