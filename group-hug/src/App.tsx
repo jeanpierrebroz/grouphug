@@ -9,7 +9,6 @@ import ResponseCard from './components/ResponseCard';
 import AddPersonButton from './components/AddPersonButton';
 import AddProjectButton from './components/AddProjectButton';
 import CircularProgress from '@mui/material/CircularProgress'; // Import the CircularProgress component
-import logo from './logo.webp';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PeopleTab from './components/PeopleTab';
@@ -43,7 +42,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [tabValue, setTabValue] = useState(0);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 

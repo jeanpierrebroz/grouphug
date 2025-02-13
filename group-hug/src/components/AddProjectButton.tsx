@@ -21,8 +21,8 @@ const AddProjectButton: React.FC = () => {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
