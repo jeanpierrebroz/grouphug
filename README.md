@@ -11,3 +11,5 @@ Group Hug is a software to help employees in companies work better. This is done
 1: Help employees find other people that have specific skills. This is to provide people with the help they need
 
 2: Find other specific projects so then two people don't make something similar!
+
+Test
