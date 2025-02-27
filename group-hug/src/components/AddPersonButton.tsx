@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const AddPersonButton: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -35,7 +36,7 @@ const AddPersonButton: React.FC = () => {
         resumeDescription: resumeContent
       };
 
-      const response = await fetch('http://localhost:8000/add_person', {
+      const response = await fetch(`${API_URL}/add_person`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -9,6 +9,7 @@ interface Project {
 }
 
 const ProjectsTab: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const [projects, setProjects] = useState<Project[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
@@ -16,7 +17,7 @@ const ProjectsTab: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/get_all_projects?skip=${page * 20}&limit=20`);
+      const response = await fetch(`${API_URL}/get_all_projects?skip=${page * 20}&limit=20`);
       const data = await response.json();
       
       setHasMore(false);

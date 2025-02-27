@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const AddProjectButton: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -31,7 +32,7 @@ const AddProjectButton: React.FC = () => {
     const data = { name, description, githubUrl, githubName };
 
     try {
-      const response = await fetch('http://localhost:8000/add_project', {
+      const response = await fetch(`${API_URL}/add_project`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
