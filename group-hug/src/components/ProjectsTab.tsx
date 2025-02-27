@@ -34,7 +34,7 @@ const ProjectsTab: React.FC = () => {
     if(!initialized.current){
         fetchProjects();
         initialized.current = true;
-        console.log("test");
+        console.log("fetching projects");
     }
   }, []);
 

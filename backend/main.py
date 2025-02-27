@@ -184,6 +184,9 @@ async def add_person(person: Person):
         prompt = f'''
             I will give you a resume. Please create a concise description of the person's skills, experience, and background.
             Focus on their technical abilities, projects, and achievements. Keep it brief but informative.
+            Do not include any information about the person's schooling, or anything outside of their technical skills.
+            Do not include the name of the person, and write it as if they were writing it about themself.
+            Do not mention how skilled they are, just mention the abilities they have.
             Resume: <{person.resumeDescription}>
         '''
         
