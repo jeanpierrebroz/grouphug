@@ -43,58 +43,66 @@ def vectormagic(query: str):
         res.append(float(i))
     return res
 
-def llmResponse(sources, queryington):
-    
-    ppl = ""
-    proj = ""
-    for i in range(6):
-        ppl+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
-    
-    for i in range(6,8):
-        proj+=f"ID: {i+1} TITLE: {sources[i]['metadata']['Name']} NAME: {sources[i]['metadata']['Description']}"
+def llmResponse(people_sources, project_sources, queryington):
+    try:
+        ppl = ""
+        proj = ""
+        for i in range(6):
+            if i+1 >= len(people_sources):
+                ppl+=f"ID: {i+1} TITLE: No more people NAME: Do not use this person. There are no more people."
+            else:
+                ppl+=f"ID: {i+1} TITLE: {people_sources[i]['metadata']['Name']} NAME: {people_sources[i]['metadata']['Description']}"
+        
+        for i in range(6,8):
+            if i+1 >= len(project_sources)-6:
+                proj+=f"ID: {i+1} TITLE: No more people NAME: Do not use this person. There are no more people."
+            else:
+                proj+=f"ID: {i+1} TITLE: {project_sources[i]['metadata']['Name']} NAME: {project_sources[i]['metadata']['Description']}"
+        prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
+        You will give a summary of what you find, and cite the source using the corresponding source ID. 
+        You must keep your responses brief, but mention all relevant people. 
+        Seperate relevant people and projects with a new line. 
+        Here is the query: {queryington}
 
-    prompt = f'''You are an expert at finding people relevant to a user's query. You will be given 6 people and 2 projects, and depending on whether the query pertains to a person or project you will repsond accordingly.
-    You will give a summary of what you find, and cite the source using the corresponding source ID. 
-    You must keep your responses brief, but mention all relevant people. 
-    Seperate relevant people and projects with a new line. 
-    Here is the query: {queryington}
 
+        Here are the PEOPLE: {ppl}
 
-    Here are the PEOPLE: {ppl}
-
-    Here are the PROJECTS: {proj}
+        Here are the PROJECTS: {proj}
 
 
 
-    '''
-    # NVIIDA STUFF
-    # client = OpenAI(
-    # base_url = "https://integrate.api.nvidia.com/v1",
-    # api_key = config['NVIDIA']
-    # )
+        '''
+        # NVIIDA STUFF
+        # client = OpenAI(
+        # base_url = "https://integrate.api.nvidia.com/v1",
+        # api_key = config['NVIDIA']
+        # )
 
-    # completion = client.chat.completions.create(
-    # model="meta/llama-3.1-405b-instruct",
-    # messages=[{"role":"user","content":prompt}],
-    # temperature=0.01,
-    # top_p=0.7,
-    # max_tokens=1024,
-    # stream=False
-    # )
+        # completion = client.chat.completions.create(
+        # model="meta/llama-3.1-405b-instruct",
+        # messages=[{"role":"user","content":prompt}],
+        # temperature=0.01,
+        # top_p=0.7,
+        # max_tokens=1024,
+        # stream=False
+        # )
 
-    # return completion.choices[0].message.content
+        # return completion.choices[0].message.content
 
-    # GEMINI STUFF
-    client = genai.Client(api_key=config['GEMINI'])
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt)
-    return response.text
+        # GEMINI STUFF
+        client = genai.Client(api_key=config['GEMINI'])
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt)
+        return response.text
+    except:
+        return "There was an issue processing your request"
 
 def get_sources(query: str):
 
     vec = vectormagic(query)
-    res = []
+    matched_people = []
+    matched_projects = []
     results = index.query(
     vector=vec,
     top_k=6,
@@ -105,7 +113,7 @@ def get_sources(query: str):
 
 
     for r in results['matches']:
-        res.append(r)
+        matched_people.append(r)
 
     results = index.query(
     vector=vec,
@@ -116,8 +124,8 @@ def get_sources(query: str):
     )
 
     for r in results['matches']:
-        res.append(r)
-    return res
+        matched_projects.append(r)
+    return matched_people, matched_projects
 
 app = FastAPI()
 
@@ -159,20 +167,21 @@ class Project(BaseModel):
 @app.post("/query")
 async def handle_query(query: Query):
     # Dummy response and sources
-    sources = get_sources(query.text)
+    people_sources, project_sources = get_sources(query.text)
 
-    response = llmResponse(sources, query)
+    response = llmResponse(people_sources, project_sources, query)
     # response = ""
 
     final = []
-    for src in sources:
+    for src in people_sources:
         temp = {'title' : src['metadata']['Name'], 'description' : src['metadata']['Description']}
  
         final.append(temp)
-    # print(final)
+    for src in project_sources:
+        temp = {'title' : src['metadata']['Name'], 'description' : src['metadata']['Description']}
+ 
+        final.append(temp)
     print(len(final), final)
-
-
 
     return {'query' : query.text, 'response' : response, 'sources' : final}
 
