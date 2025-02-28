@@ -98,6 +98,7 @@ const AddPersonButton: React.FC = () => {
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                placeholder="Write all of your skills/experience related to your role"
               />
             </>
           ) : (

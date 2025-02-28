@@ -107,6 +107,7 @@ const AddProjectButton: React.FC = () => {
               fullWidth
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
+              placeholder="There must be a ReadMe containing a project description"
             />
             </Box>
           )}
